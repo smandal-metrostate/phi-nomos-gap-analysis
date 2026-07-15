@@ -1,0 +1,693 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>PHI-Nomos &mdash; Retroactive BAA Termination | Modular Norm Model</title>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Source+Serif+4:ital,wght@0,400;0,600;0,700;1,400&family=IBM+Plex+Mono:wght@400;500;600&family=Inter:wght@400;500;600;700&display=swap');
+
+:root{
+  --paper:#f8f6f1;
+  --panel:#ffffff;
+  --hairline:#ddd7c8;
+  --ink:#1c2129;
+  --ink-soft:#565b52;
+  --slate:#2c4a6e;
+  --slate-soft:#e8eef4;
+  --amber:#c2751b;
+  --amber-soft:#fdeed9;
+  --green:#1f8a5f;
+  --green-soft:#e3f3ea;
+  --red:#b3413a;
+  --red-soft:#fbe9e7;
+  --grey-soft:#eef0ee;
+  --mono: 'IBM Plex Mono', ui-monospace, Menlo, Consolas, monospace;
+  --serif: 'Source Serif 4', Georgia, 'Iowan Old Style', serif;
+  --sans: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+}
+*{box-sizing:border-box;}
+html,body{margin:0;padding:0;}
+body{
+  background:var(--paper);
+  color:var(--ink);
+  font-family:var(--sans);
+  line-height:1.55;
+  -webkit-font-smoothing:antialiased;
+}
+::selection{background:var(--slate-soft);}
+
+a{color:var(--slate);}
+
+.wrap{max-width:1180px;margin:0 auto;padding:0 28px 80px;}
+
+header.masthead{
+  border-bottom:1px solid var(--hairline);
+  padding:38px 0 28px;
+  margin-bottom:36px;
+}
+.eyebrow{
+  font-family:var(--mono);
+  font-size:12px;
+  letter-spacing:.12em;
+  text-transform:uppercase;
+  color:var(--amber);
+  margin:0 0 10px;
+}
+h1{
+  font-family:var(--serif);
+  font-weight:700;
+  font-size:clamp(28px,3.4vw,42px);
+  margin:0 0 10px;
+  letter-spacing:-0.01em;
+}
+.subtitle{
+  font-family:var(--serif);
+  font-style:italic;
+  color:var(--ink-soft);
+  font-size:18px;
+  margin:0 0 4px;
+  max-width:820px;
+}
+.source-line{
+  font-family:var(--mono);
+  font-size:12.5px;
+  color:var(--ink-soft);
+  margin-top:14px;
+}
+.source-line a{color:var(--ink-soft); text-decoration:underline dotted;}
+
+section{margin-bottom:44px;}
+.section-label{
+  font-family:var(--mono);
+  font-size:12px;
+  letter-spacing:.1em;
+  text-transform:uppercase;
+  color:var(--ink-soft);
+  display:flex;
+  align-items:center;
+  gap:12px;
+  margin-bottom:16px;
+}
+.section-label::after{
+  content:'';
+  flex:1;
+  height:1px;
+  background:var(--hairline);
+}
+
+.card{
+  background:var(--panel);
+  border:1px solid var(--hairline);
+  border-radius:3px;
+  padding:26px 30px;
+}
+
+.statute{
+  font-family:var(--serif);
+  font-size:16px;
+}
+.statute p{margin:0 0 14px;}
+.statute .cite{
+  font-family:var(--mono);
+  font-size:12.5px;
+  color:var(--slate);
+  display:inline-block;
+  margin-bottom:6px;
+}
+
+.scenario-grid{
+  display:grid;
+  grid-template-columns:1.3fr 1fr;
+  gap:22px;
+}
+@media (max-width:860px){ .scenario-grid{grid-template-columns:1fr;} }
+
+.scenario-grid h3{
+  font-family:var(--sans);
+  font-size:12px;
+  letter-spacing:.08em;
+  text-transform:uppercase;
+  color:var(--ink-soft);
+  margin:0 0 10px;
+}
+.scenario-grid .card p{font-family:var(--serif); font-size:15.5px; margin:0 0 10px;}
+.answers{list-style:none; margin:0; padding:0; font-family:var(--sans); font-size:14.5px;}
+.answers li{
+  padding:9px 0;
+  border-top:1px solid var(--hairline);
+  display:flex; gap:10px;
+}
+.answers li:first-child{border-top:none;}
+.answers li b{color:var(--slate); font-family:var(--mono); font-size:13px;}
+
+.howto ol{
+  font-family:var(--sans);
+  font-size:14.5px;
+  padding-left:20px;
+  margin:0;
+}
+.howto li{margin-bottom:10px;}
+.howto code{
+  font-family:var(--mono);
+  background:var(--grey-soft);
+  padding:1px 6px;
+  border-radius:3px;
+  font-size:13px;
+}
+
+.legend{
+  display:flex;
+  flex-wrap:wrap;
+  gap:10px 22px;
+  font-family:var(--sans);
+  font-size:13.5px;
+  margin-top:18px;
+  padding-top:18px;
+  border-top:1px solid var(--hairline);
+}
+.legend .item{display:flex; align-items:center; gap:8px;}
+.swatch{width:13px;height:13px;border-radius:3px;display:inline-block;border:1px solid rgba(0,0,0,.15);}
+
+.toolbar{
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  flex-wrap:wrap;
+  gap:14px;
+  margin-bottom:18px;
+}
+.toolbar .hint{
+  font-family:var(--sans);
+  font-size:13.5px;
+  color:var(--ink-soft);
+}
+.btn{
+  font-family:var(--sans);
+  font-weight:600;
+  font-size:14px;
+  border:none;
+  border-radius:4px;
+  padding:11px 22px;
+  cursor:pointer;
+  transition:filter .15s ease, transform .1s ease;
+}
+.btn:active{transform:translateY(1px);}
+.btn-solve{background:var(--slate); color:#fff;}
+.btn-solve:hover{filter:brightness(1.12);}
+.btn-solve:disabled{background:#9aa7b3; cursor:default;}
+.btn-reset{background:transparent; color:var(--ink-soft); border:1px solid var(--hairline); margin-left:10px;}
+.btn-reset:hover{border-color:var(--ink-soft); color:var(--ink);}
+
+.diagram-card{
+  overflow-x:auto;
+  padding:30px 24px 18px;
+}
+#mainsvg{display:block; margin:0 auto; max-width:100%; height:auto;}
+#mainsvg .node{cursor:default;}
+#mainsvg .node.clickable{cursor:pointer;}
+#mainsvg .node.clickable:hover polygon,
+#mainsvg .node.clickable:hover path{filter:brightness(0.94);}
+#mainsvg text{user-select:none;}
+
+.tooltip{
+  position:fixed;
+  z-index:999;
+  max-width:320px;
+  background:var(--ink);
+  color:#fdfaf3;
+  font-family:var(--serif);
+  font-size:13.5px;
+  line-height:1.4;
+  padding:10px 13px;
+  border-radius:5px;
+  pointer-events:none;
+  opacity:0;
+  transition:opacity .1s ease;
+  box-shadow:0 6px 18px rgba(0,0,0,.25);
+}
+.tooltip.show{opacity:1;}
+.tooltip .tt-id{
+  display:block;
+  font-family:var(--mono);
+  font-size:10.5px;
+  color:#d9c9a4;
+  letter-spacing:.06em;
+  margin-bottom:4px;
+  text-transform:uppercase;
+}
+
+#register .card{padding:0; overflow:hidden;}
+.register-empty{
+  padding:34px 30px;
+  font-family:var(--serif);
+  font-style:italic;
+  color:var(--ink-soft);
+  text-align:center;
+}
+table.gaps{width:100%; border-collapse:collapse; font-family:var(--sans); font-size:14px;}
+table.gaps th{
+  text-align:left;
+  font-family:var(--mono);
+  font-size:11px;
+  letter-spacing:.08em;
+  text-transform:uppercase;
+  color:var(--ink-soft);
+  background:var(--grey-soft);
+  padding:10px 16px;
+  border-bottom:1px solid var(--hairline);
+}
+table.gaps td{
+  padding:14px 16px;
+  border-bottom:1px solid var(--hairline);
+  vertical-align:top;
+}
+table.gaps tr:last-child td{border-bottom:none;}
+.pill{
+  display:inline-block;
+  font-family:var(--mono);
+  font-size:11px;
+  font-weight:600;
+  letter-spacing:.04em;
+  padding:3px 9px;
+  border-radius:20px;
+}
+.pill-vio{background:var(--red-soft); color:var(--red);}
+.pill-com{background:var(--green-soft); color:var(--green);}
+.pill-inc{background:var(--grey-soft); color:var(--ink-soft);}
+.norm-cite{font-family:var(--mono); font-size:12.5px; color:var(--slate);}
+
+footer{
+  margin-top:60px;
+  padding-top:24px;
+  border-top:1px solid var(--hairline);
+  font-family:var(--mono);
+  font-size:12px;
+  color:var(--ink-soft);
+}
+</style>
+</head>
+<body>
+<div class="wrap">
+
+<header class="masthead">
+  <p class="eyebrow">PHI&#8209;Nomos &middot; Modular Norm Model Demo</p>
+  <h1>Retroactive BAA Termination</h1>
+  <p class="subtitle">An interactive Nomos modular norm model for a HIPAA PHI gap&#8209;analysis case study, built in the visual and reasoning style of the original Modular Norms toolchain.</p>
+  <p class="source-line">Model template: Mandal, Gandhi &amp; Siy, <a href="https://github.com/robinagandhi/modularnorms" target="_blank" rel="noopener">robinagandhi/modularnorms</a> &middot; Applied here to 45 CFR &sect;164.308(b)(1), &sect;164.410, &sect;164.504(e)(2)(ii)(J)</p>
+</header>
+
+<section>
+  <p class="section-label">Regulatory Text</p>
+  <div class="card statute">
+    <span class="cite">45 CFR &sect;164.308(b)(1) &mdash; Business Associate Contracts</span>
+    <p>A covered entity may permit a business associate to create, receive, maintain, or transmit protected health information on the covered entity&rsquo;s behalf only if the covered entity obtains satisfactory assurances, in the form of a written contract or other arrangement, that the business associate will appropriately safeguard the information.</p>
+    <span class="cite">45 CFR &sect;164.504(e)(2)(ii)(J) &mdash; Disposition of PHI at Termination</span>
+    <p>The contract between a covered entity and a business associate must provide that, upon termination of the contract, the business associate will return or destroy all protected health information received from, or created or received on behalf of, the covered entity, if feasible.</p>
+    <span class="cite">45 CFR &sect;164.410 / &sect;164.404 &mdash; Breach Notification</span>
+    <p>Following discovery of a breach of unsecured protected health information, a covered entity must notify each affected individual, and HHS, without unreasonable delay and in no case later than 60 days after discovery.</p>
+  </div>
+</section>
+
+<section>
+  <p class="section-label">Compliance Scenario</p>
+  <div class="scenario-grid">
+    <div class="card">
+      <h3>Scenario</h3>
+      <p>MedTech Solutions provides billing services to Riverside Clinic under a Business Associate Agreement (BAA) executed in 2022. During an internal audit in July 2026, Riverside discovers that MedTech&rsquo;s BAA lapsed on renewal in January 2025 due to an administrative oversight &mdash; but MedTech continued to receive and transmit patient PHI for billing throughout 2025 and into 2026 without a BAA in force. The lapse was never noticed until this audit; no notifications were sent when it was discovered, and the engagement is ongoing.</p>
+      <h3>Compliance Question</h3>
+      <p>Is Riverside Clinic compliant with the Business Associate Agreement requirement at &sect;164.308(b)(1) with respect to the PHI transmitted to MedTech during the lapse period &mdash; and what downstream obligations does that gap trigger?</p>
+    </div>
+    <div class="card">
+      <h3>Answer Choices</h3>
+      <ul class="answers">
+        <li><b>1</b> Yes, Riverside is compliant &mdash; the original 2022 BAA covers the relationship regardless of renewal status.</li>
+        <li><b>2</b> No &mdash; the lapse is a gap at &sect;164.308(b)(1) that also activates the Breach Notification duty at &sect;164.410.</li>
+        <li><b>3</b> Need more information about whether MedTech safeguarded the PHI despite the lapse.</li>
+      </ul>
+    </div>
+  </div>
+</section>
+
+<section>
+  <p class="section-label">Modular Norm Model</p>
+  <div class="card howto">
+    <ol>
+      <li>Hover over any <b>triangle</b> (duty) or <b>box</b> (situation) to read its underlying legal text.</li>
+      <li>Click a white situation box to set it <code>TRUE</code> (green) based on the scenario; click again for <code>FALSE</code> (red); click a third time to clear it.</li>
+      <li>The amber box in the &sect;164.410 cluster is a <b>cross&#8209;reference</b> &mdash; it inherits its value from whatever the &sect;164.308(b)(1) duty resolves to, exactly as in the original toolchain's <code>$ID</code> super&#8209;situation links.</li>
+      <li>Press <b>Solve</b> to propagate satisfiability up through each super&#8209;situation. Duties recolor green (Compliant) or red (Violated); the surrounding cluster recolors to match.</li>
+      <li>The Gap Register below updates automatically with every violated duty found.</li>
+    </ol>
+    <div class="legend">
+      <span class="item"><span class="swatch" style="background:#e3f3ea;border-color:#1f8a5f"></span>ST &mdash; situation satisfied / Com &ndash; duty compliant</span>
+      <span class="item"><span class="swatch" style="background:#fbe9e7;border-color:#b3413a"></span>SF &mdash; situation not satisfied / Vio &ndash; duty violated</span>
+      <span class="item"><span class="swatch" style="background:#ffffff;border-color:#334155"></span>SU &mdash; satisfiability undefined</span>
+      <span class="item"><span class="swatch" style="background:#fdeed9;border-color:#c2751b"></span>Cross&#8209;reference to another super&#8209;situation</span>
+      <span class="item"><span class="swatch" style="background:#eef0ee;border-color:#9aa3ab"></span>Inc &mdash; norm inconclusive (not yet activated)</span>
+    </div>
+  </div>
+</section>
+
+<section>
+  <div class="toolbar">
+    <div>
+      <button class="btn btn-solve" id="solveBtn">Solve</button>
+      <button class="btn btn-reset" id="resetBtn">Reset all situations</button>
+    </div>
+    <div class="hint">Click situation boxes below, then press Solve to see compliance propagate.</div>
+  </div>
+  <div class="card diagram-card">
+<svg id="mainsvg" width="1113pt" height="218pt"
+ viewBox="0.00 0.00 1113.00 218.00" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+<g id="graph0" class="graph" transform="scale(1 1) rotate(0) translate(4 214)">
+<title>G</title>
+<g id="clust1" class="cluster">
+<title>clusterSS_HIPAA308b1</title>
+<path fill="transparent" stroke="#94a3b8" d="M20,-8C20,-8 359,-8 359,-8 365,-8 371,-14 371,-20 371,-20 371,-190 371,-190 371,-196 365,-202 359,-202 359,-202 20,-202 20,-202 14,-202 8,-196 8,-190 8,-190 8,-20 8,-20 8,-14 14,-8 20,-8"/>
+<text text-anchor="middle" x="189.5" y="-15.4" font-family="Helvetica,sans-Serif" font-size="12.00">SS_HIPAA308b1</text>
+</g>
+<g id="clust2" class="cluster">
+<title>clusterSS_HIPAA410</title>
+<path fill="transparent" stroke="#94a3b8" d="M403,-8C403,-8 703,-8 703,-8 709,-8 715,-14 715,-20 715,-20 715,-190 715,-190 715,-196 709,-202 703,-202 703,-202 403,-202 403,-202 397,-202 391,-196 391,-190 391,-190 391,-20 391,-20 391,-14 397,-8 403,-8"/>
+<text text-anchor="middle" x="553" y="-15.4" font-family="Helvetica,sans-Serif" font-size="12.00">SS_HIPAA410</text>
+</g>
+<g id="clust3" class="cluster">
+<title>clusterSS_HIPAA504eJ</title>
+<path fill="transparent" stroke="#94a3b8" d="M747,-13.5C747,-13.5 1085,-13.5 1085,-13.5 1091,-13.5 1097,-19.5 1097,-25.5 1097,-25.5 1097,-190 1097,-190 1097,-196 1091,-202 1085,-202 1085,-202 747,-202 747,-202 741,-202 735,-196 735,-190 735,-190 735,-25.5 735,-25.5 735,-19.5 741,-13.5 747,-13.5"/>
+<text text-anchor="middle" x="916" y="-20.9" font-family="Helvetica,sans-Serif" font-size="12.00">SS_HIPAA504eJ</text>
+</g>
+<!-- HIPAA308b1 -->
+<g id="HIPAA308b1" class="node">
+<title>HIPAA308b1</title>
+<polygon fill="#ffffff" stroke="black" points="255,-194 146.52,-164 363.48,-164 255,-194"/>
+<text text-anchor="middle" x="255" y="-171.2" font-family="Helvetica,sans-Serif" font-weight="bold" font-size="11.00">HIPAA308b1</text>
+</g>
+<!-- HIPAA308b1_1 -->
+<g id="HIPAA308b1_1" class="node">
+<title>HIPAA308b1_1</title>
+<path fill="#ffffff" stroke="#334155" d="M350.5,-100C350.5,-100 221.5,-100 221.5,-100 215.5,-100 209.5,-94 209.5,-88 209.5,-88 209.5,-49 209.5,-49 209.5,-43 215.5,-37 221.5,-37 221.5,-37 350.5,-37 350.5,-37 356.5,-37 362.5,-43 362.5,-49 362.5,-49 362.5,-88 362.5,-88 362.5,-94 356.5,-100 350.5,-100"/>
+<text text-anchor="middle" x="286" y="-88" font-family="Helvetica,sans-Serif" font-size="10.00">covered entity obtained a</text>
+<text text-anchor="middle" x="286" y="-77" font-family="Helvetica,sans-Serif" font-size="10.00">written Business Associate</text>
+<text text-anchor="middle" x="286" y="-66" font-family="Helvetica,sans-Serif" font-size="10.00">Agreement with the vendor,</text>
+<text text-anchor="middle" x="286" y="-55" font-family="Helvetica,sans-Serif" font-size="10.00">in force for the full period</text>
+<text text-anchor="middle" x="286" y="-44" font-family="Helvetica,sans-Serif" font-size="10.00">the vendor handled PHI</text>
+</g>
+<!-- HIPAA308b1_1&#45;&gt;HIPAA308b1 -->
+<g id="edge1" class="edge">
+<title>HIPAA308b1_1&#45;&gt;HIPAA308b1</title>
+<path fill="none" stroke="#94a3b8" d="M276.78,-100.27C271.56,-117.73 265.18,-139.01 260.68,-154.03"/>
+<polygon fill="#94a3b8" stroke="#94a3b8" points="257.3,-153.14 257.78,-163.72 264,-155.14 257.3,-153.14"/>
+<text text-anchor="middle" x="287.5" y="-124.8" font-family="Helvetica,sans-Serif" font-size="9.00" fill="#64748b">satisfies</text>
+</g>
+<!-- HIPAA308b1_2 -->
+<g id="HIPAA308b1_2" class="node">
+<title>HIPAA308b1_2</title>
+<path fill="#ffffff" stroke="#334155" d="M161.5,-100C161.5,-100 28.5,-100 28.5,-100 22.5,-100 16.5,-94 16.5,-88 16.5,-88 16.5,-49 16.5,-49 16.5,-43 22.5,-37 28.5,-37 28.5,-37 161.5,-37 161.5,-37 167.5,-37 173.5,-43 173.5,-49 173.5,-49 173.5,-88 173.5,-88 173.5,-94 167.5,-100 161.5,-100"/>
+<text text-anchor="middle" x="95" y="-88" font-family="Helvetica,sans-Serif" font-size="10.00">a vendor creates, receives,</text>
+<text text-anchor="middle" x="95" y="-77" font-family="Helvetica,sans-Serif" font-size="10.00">maintains, or transmits</text>
+<text text-anchor="middle" x="95" y="-66" font-family="Helvetica,sans-Serif" font-size="10.00">protected health information</text>
+<text text-anchor="middle" x="95" y="-55" font-family="Helvetica,sans-Serif" font-size="10.00">on the covered entity&#39;s</text>
+<text text-anchor="middle" x="95" y="-44" font-family="Helvetica,sans-Serif" font-size="10.00">behalf</text>
+</g>
+<!-- HIPAA308b1_2&#45;&gt;HIPAA308b1 -->
+<g id="edge2" class="edge">
+<title>HIPAA308b1_2&#45;&gt;HIPAA308b1</title>
+<path fill="none" stroke="#94a3b8" d="M142.57,-100.27C172.34,-119.53 209.31,-143.44 232.54,-158.47"/>
+<polygon fill="#94a3b8" stroke="#94a3b8" points="230.71,-161.46 241.01,-163.95 234.52,-155.58 230.71,-161.46"/>
+<text text-anchor="middle" x="209.5" y="-124.8" font-family="Helvetica,sans-Serif" font-size="9.00" fill="#64748b">activates</text>
+</g>
+<!-- HIPAA410 -->
+<g id="HIPAA410" class="node">
+<title>HIPAA410</title>
+<polygon fill="#ffffff" stroke="black" points="513,-194 422.6,-164 603.4,-164 513,-194"/>
+<text text-anchor="middle" x="513" y="-171.2" font-family="Helvetica,sans-Serif" font-weight="bold" font-size="11.00">HIPAA410</text>
+</g>
+<!-- HIPAA410_3 -->
+<g id="HIPAA410_3" class="node">
+<title>HIPAA410_3</title>
+<path fill="#ffffff" stroke="#334155" d="M695,-100C695,-100 561,-100 561,-100 555,-100 549,-94 549,-88 549,-88 549,-49 549,-49 549,-43 555,-37 561,-37 561,-37 695,-37 695,-37 701,-37 707,-43 707,-49 707,-49 707,-88 707,-88 707,-94 701,-100 695,-100"/>
+<text text-anchor="middle" x="628" y="-88" font-family="Helvetica,sans-Serif" font-size="10.00">covered entity notified</text>
+<text text-anchor="middle" x="628" y="-77" font-family="Helvetica,sans-Serif" font-size="10.00">affected individuals and HHS</text>
+<text text-anchor="middle" x="628" y="-66" font-family="Helvetica,sans-Serif" font-size="10.00">within 60 days of</text>
+<text text-anchor="middle" x="628" y="-55" font-family="Helvetica,sans-Serif" font-size="10.00">discovering the</text>
+<text text-anchor="middle" x="628" y="-44" font-family="Helvetica,sans-Serif" font-size="10.00">impermissible disclosure</text>
+</g>
+<!-- HIPAA410_3&#45;&gt;HIPAA410 -->
+<g id="edge3" class="edge">
+<title>HIPAA410_3&#45;&gt;HIPAA410</title>
+<path fill="none" stroke="#94a3b8" d="M593.81,-100.27C572.98,-119.02 547.25,-142.18 530.5,-157.25"/>
+<polygon fill="#94a3b8" stroke="#94a3b8" points="528.15,-154.66 523.05,-163.95 532.83,-159.86 528.15,-154.66"/>
+<text text-anchor="middle" x="585.5" y="-124.8" font-family="Helvetica,sans-Serif" font-size="9.00" fill="#64748b">satisfies</text>
+</g>
+<!-- HIPAA410_4 -->
+<g id="HIPAA410_4" class="node">
+<title>HIPAA410_4</title>
+<path fill="#fde8cf" stroke="#c2751b" d="M501,-86.5C501,-86.5 411,-86.5 411,-86.5 405,-86.5 399,-80.5 399,-74.5 399,-74.5 399,-62.5 399,-62.5 399,-56.5 405,-50.5 411,-50.5 411,-50.5 501,-50.5 501,-50.5 507,-50.5 513,-56.5 513,-62.5 513,-62.5 513,-74.5 513,-74.5 513,-80.5 507,-86.5 501,-86.5"/>
+<text text-anchor="middle" x="456" y="-66" font-family="Helvetica,sans-Serif" font-size="10.00">See SS_HIPAA308b1</text>
+</g>
+<!-- HIPAA410_4&#45;&gt;HIPAA308b1 -->
+<g id="edge7" class="edge">
+<title>HIPAA410_4&#45;&gt;HIPAA308b1</title>
+<path fill="none" stroke="#94a3b8" stroke-dasharray="5,2" d="M422.81,-86.59C410.55,-92.9 395.82,-100.49 380.25,-108.51"/>
+<polygon fill="#94a3b8" stroke="#94a3b8" points="378.28,-105.58 371,-113.27 381.49,-111.8 378.28,-105.58"/>
+</g>
+<!-- HIPAA410_4&#45;&gt;HIPAA410 -->
+<g id="edge4" class="edge">
+<title>HIPAA410_4&#45;&gt;HIPAA410</title>
+<path fill="none" stroke="#94a3b8" d="M465.41,-86.59C475.81,-105.46 492.47,-135.72 503.07,-154.96"/>
+<polygon fill="#94a3b8" stroke="#94a3b8" points="500.1,-156.83 507.99,-163.9 506.23,-153.46 500.1,-156.83"/>
+<text text-anchor="middle" x="509.5" y="-124.8" font-family="Helvetica,sans-Serif" font-size="9.00" fill="#64748b">activates</text>
+</g>
+<!-- HIPAA504eJ -->
+<g id="HIPAA504eJ" class="node">
+<title>HIPAA504eJ</title>
+<polygon fill="#ffffff" stroke="black" points="899,-194 795.64,-164 1002.36,-164 899,-194"/>
+<text text-anchor="middle" x="899" y="-171.2" font-family="Helvetica,sans-Serif" font-weight="bold" font-size="11.00">HIPAA504eJ</text>
+</g>
+<!-- HIPAA504eJ_5 -->
+<g id="HIPAA504eJ_5" class="node">
+<title>HIPAA504eJ_5</title>
+<path fill="#ffffff" stroke="#334155" d="M1076.5,-94.5C1076.5,-94.5 939.5,-94.5 939.5,-94.5 933.5,-94.5 927.5,-88.5 927.5,-82.5 927.5,-82.5 927.5,-54.5 927.5,-54.5 927.5,-48.5 933.5,-42.5 939.5,-42.5 939.5,-42.5 1076.5,-42.5 1076.5,-42.5 1082.5,-42.5 1088.5,-48.5 1088.5,-54.5 1088.5,-54.5 1088.5,-82.5 1088.5,-82.5 1088.5,-88.5 1082.5,-94.5 1076.5,-94.5"/>
+<text text-anchor="middle" x="1008" y="-82.5" font-family="Helvetica,sans-Serif" font-size="10.00">vendor returned or destroyed</text>
+<text text-anchor="middle" x="1008" y="-71.5" font-family="Helvetica,sans-Serif" font-size="10.00">all protected health</text>
+<text text-anchor="middle" x="1008" y="-60.5" font-family="Helvetica,sans-Serif" font-size="10.00">information upon termination</text>
+<text text-anchor="middle" x="1008" y="-49.5" font-family="Helvetica,sans-Serif" font-size="10.00">of the arrangement</text>
+</g>
+<!-- HIPAA504eJ_5&#45;&gt;HIPAA504eJ -->
+<g id="edge5" class="edge">
+<title>HIPAA504eJ_5&#45;&gt;HIPAA504eJ</title>
+<path fill="none" stroke="#94a3b8" d="M981.61,-94.55C961.18,-113.96 933.48,-140.26 915.93,-156.93"/>
+<polygon fill="#94a3b8" stroke="#94a3b8" points="913.48,-154.43 908.63,-163.85 918.3,-159.5 913.48,-154.43"/>
+<text text-anchor="middle" x="968.5" y="-124.8" font-family="Helvetica,sans-Serif" font-size="9.00" fill="#64748b">satisfies</text>
+</g>
+<!-- HIPAA504eJ_6 -->
+<g id="HIPAA504eJ_6" class="node">
+<title>HIPAA504eJ_6</title>
+<path fill="#ffffff" stroke="#334155" d="M879.5,-94.5C879.5,-94.5 754.5,-94.5 754.5,-94.5 748.5,-94.5 742.5,-88.5 742.5,-82.5 742.5,-82.5 742.5,-54.5 742.5,-54.5 742.5,-48.5 748.5,-42.5 754.5,-42.5 754.5,-42.5 879.5,-42.5 879.5,-42.5 885.5,-42.5 891.5,-48.5 891.5,-54.5 891.5,-54.5 891.5,-82.5 891.5,-82.5 891.5,-88.5 885.5,-94.5 879.5,-94.5"/>
+<text text-anchor="middle" x="817" y="-82.5" font-family="Helvetica,sans-Serif" font-size="10.00">the Business Associate</text>
+<text text-anchor="middle" x="817" y="-71.5" font-family="Helvetica,sans-Serif" font-size="10.00">Agreement or arrangement</text>
+<text text-anchor="middle" x="817" y="-60.5" font-family="Helvetica,sans-Serif" font-size="10.00">covering the PHI has</text>
+<text text-anchor="middle" x="817" y="-49.5" font-family="Helvetica,sans-Serif" font-size="10.00">terminated</text>
+</g>
+<!-- HIPAA504eJ_6&#45;&gt;HIPAA504eJ -->
+<g id="edge6" class="edge">
+<title>HIPAA504eJ_6&#45;&gt;HIPAA504eJ</title>
+<path fill="none" stroke="#94a3b8" d="M836.85,-94.55C851.86,-113.51 872.09,-139.04 885.33,-155.75"/>
+<polygon fill="#94a3b8" stroke="#94a3b8" points="882.6,-157.94 891.56,-163.6 888.09,-153.59 882.6,-157.94"/>
+<text text-anchor="middle" x="885.5" y="-124.8" font-family="Helvetica,sans-Serif" font-size="9.00" fill="#64748b">activates</text>
+</g>
+</g>
+</svg>
+
+  </div>
+</section>
+
+<section id="register">
+  <p class="section-label">Gap Register</p>
+  <div class="card">
+    <div class="register-empty" id="registerEmpty">Press Solve to compute the gap register for the current situation values.</div>
+    <table class="gaps" id="registerTable" style="display:none;">
+      <thead>
+        <tr><th>Status</th><th>Norm</th><th>Duty holder</th><th>Finding</th></tr>
+      </thead>
+      <tbody id="registerBody"></tbody>
+    </table>
+  </div>
+</section>
+
+<footer>
+  Interactive re&#8209;implementation of the Nomos modular norm visual/reasoning pattern from robinagandhi/modularnorms, applied to a PHI&#8209;Nomos HIPAA gap&#8209;analysis case study. Reasoning runs entirely client&#8209;side in this file &mdash; no external norm server required.
+</footer>
+
+</div>
+
+<div class="tooltip" id="tooltip"><span class="tt-id" id="ttId"></span><span id="ttText"></span></div>
+
+<script>
+const META = {"tooltips": {"HIPAA308b1": "45 CFR 164.308(b)(1): A covered entity may permit a business associate to create, receive, maintain, or transmit protected health information on the covered entity's behalf only if the covered entity obtains satisfactory assurances, in the form of a written Business Associate Agreement, that the business associate will appropriately safeguard the information.", "HIPAA308b1_1": "covered entity obtained a written Business Associate Agreement with the vendor, in force for the full period the vendor handled PHI", "HIPAA308b1_2": "a vendor creates, receives, maintains, or transmits protected health information on the covered entity's behalf", "HIPAA410": "45 CFR 164.410 / 164.404: Following discovery of a breach of unsecured protected health information, a covered entity must notify each affected individual and HHS without unreasonable delay, and in no case later than 60 days after discovery of the breach.", "HIPAA410_3": "covered entity notified affected individuals and HHS within 60 days of discovering the impermissible disclosure", "HIPAA504eJ": "45 CFR 164.504(e)(2)(ii)(J): A Business Associate Agreement must provide that, upon termination of the contract, the business associate will return or destroy all protected health information received from, or created or received on behalf of, the covered entity, if feasible.", "HIPAA504eJ_5": "vendor returned or destroyed all protected health information upon termination of the arrangement", "HIPAA504eJ_6": "the Business Associate Agreement or arrangement covering the PHI has terminated"}, "situationLabels": {"HIPAA308b1_1": "covered entity obtained a written Business Associate Agreement with the vendor, in force for the full period the vendor handled PHI", "HIPAA308b1_2": "a vendor creates, receives, maintains, or transmits protected health information on the covered entity's behalf", "HIPAA410_3": "covered entity notified affected individuals and HHS within 60 days of discovering the impermissible disclosure", "HIPAA410_4": "SS_HIPAA308b1", "HIPAA504eJ_5": "vendor returned or destroyed all protected health information upon termination of the arrangement", "HIPAA504eJ_6": "the Business Associate Agreement or arrangement covering the PHI has terminated"}, "nodeKind": {"HIPAA308b1": "duty", "HIPAA308b1_1": "situation", "HIPAA308b1_2": "situation", "HIPAA410": "duty", "HIPAA410_3": "situation", "HIPAA410_4": "crossref", "HIPAA504eJ": "duty", "HIPAA504eJ_5": "situation", "HIPAA504eJ_6": "situation"}, "normOrder": ["HIPAA308b1", "HIPAA410", "HIPAA504eJ"], "norms": {"HIPAA308b1": {"kind": "duty", "sentence": "45 CFR 164.308(b)(1): A covered entity may permit a business associate to create, receive, maintain, or transmit protected health information on the covered entity's behalf only if the covered entity obtains satisfactory assurances, in the form of a written Business Associate Agreement, that the business associate will appropriately safeguard the information.", "actor": "Covered entity", "satisfiesSid": "HIPAA308b1_1", "activatesSid": "HIPAA308b1_2", "activatesIsCrossref": false, "crossrefTarget": null}, "HIPAA410": {"kind": "duty", "sentence": "45 CFR 164.410 / 164.404: Following discovery of a breach of unsecured protected health information, a covered entity must notify each affected individual and HHS without unreasonable delay, and in no case later than 60 days after discovery of the breach.", "actor": "Covered entity", "satisfiesSid": "HIPAA410_3", "activatesSid": "HIPAA410_4", "activatesIsCrossref": true, "crossrefTarget": "HIPAA308b1"}, "HIPAA504eJ": {"kind": "duty", "sentence": "45 CFR 164.504(e)(2)(ii)(J): A Business Associate Agreement must provide that, upon termination of the contract, the business associate will return or destroy all protected health information received from, or created or received on behalf of, the covered entity, if feasible.", "actor": "Business associate", "satisfiesSid": "HIPAA504eJ_5", "activatesSid": "HIPAA504eJ_6", "activatesIsCrossref": false, "crossrefTarget": null}}};
+
+// ---------- situation state ----------
+// null = SU (undefined), true = ST, false = SF
+const state = {};
+Object.keys(META.situationLabels).forEach(sid => {
+  if (META.nodeKind[sid] === 'situation') state[sid] = null;
+});
+
+const COLORS = {
+  st:   {fill:'#e3f3ea', stroke:'#1f8a5f'},
+  sf:   {fill:'#fbe9e7', stroke:'#b3413a'},
+  su:   {fill:'#ffffff', stroke:'#334155'},
+  com:  {fill:'#e3f3ea', stroke:'#1f8a5f'},
+  vio:  {fill:'#fbe9e7', stroke:'#b3413a'},
+  inc:  {fill:'#eef0ee', stroke:'#9aa3ab'},
+  xref: {fill:'#fdeed9', stroke:'#c2751b'}
+};
+
+function shapeEl(nodeId){
+  const g = document.getElementById(nodeId);
+  if (!g) return null;
+  return g.querySelector('polygon, path');
+}
+function clusterShapeEl(normId){
+  const titles = document.querySelectorAll('#mainsvg g.cluster > title');
+  for (const t of titles){
+    if (t.textContent === 'clusterSS_' + normId){
+      return t.parentElement.querySelector('path, polygon');
+    }
+  }
+  return null;
+}
+function paint(el, fill, stroke){
+  if (!el) return;
+  el.setAttribute('fill', fill);
+  el.setAttribute('stroke', stroke);
+}
+
+// ---------- tooltips ----------
+const tooltip = document.getElementById('tooltip');
+const ttId = document.getElementById('ttId');
+const ttText = document.getElementById('ttText');
+
+function attachTooltip(nodeId, label, sentence){
+  const g = document.getElementById(nodeId);
+  if (!g) return;
+  g.addEventListener('mousemove', (e) => {
+    ttId.textContent = label;
+    ttText.textContent = sentence;
+    tooltip.style.left = (e.clientX + 16) + 'px';
+    tooltip.style.top = (e.clientY + 16) + 'px';
+    tooltip.classList.add('show');
+  });
+  g.addEventListener('mouseleave', () => tooltip.classList.remove('show'));
+}
+
+Object.entries(META.norms).forEach(([id, n]) => {
+  attachTooltip(id, id + ' \u2014 ' + n.kind.toUpperCase(), n.sentence);
+});
+Object.entries(META.situationLabels).forEach(([sid, label]) => {
+  if (META.nodeKind[sid] === 'situation'){
+    attachTooltip(sid, sid, label);
+  } else if (META.nodeKind[sid] === 'crossref'){
+    attachTooltip(sid, sid, 'Cross-reference: inherits its value from the ' + label + ' super-situation once solved.');
+  }
+});
+
+// ---------- click to toggle situations ----------
+Object.keys(state).forEach(sid => {
+  const g = document.getElementById(sid);
+  if (!g) return;
+  g.classList.add('clickable');
+  g.addEventListener('click', () => {
+    if (state[sid] === null) state[sid] = true;
+    else if (state[sid] === true) state[sid] = false;
+    else state[sid] = null;
+    renderSituation(sid);
+    clearSolution();
+  });
+  renderSituation(sid);
+});
+
+function renderSituation(sid){
+  const el = shapeEl(sid);
+  const v = state[sid];
+  const c = v === true ? COLORS.st : v === false ? COLORS.sf : COLORS.su;
+  paint(el, c.fill, c.stroke);
+}
+
+function clearSolution(){
+  document.getElementById('registerEmpty').style.display = 'block';
+  document.getElementById('registerEmpty').textContent = 'Situation values changed \u2014 press Solve to recompute the gap register.';
+  document.getElementById('registerTable').style.display = 'none';
+  Object.keys(META.norms).forEach(id => paint(shapeEl(id), '#ffffff', 'black'));
+}
+
+// ---------- reasoning ----------
+function solve(){
+  const results = {};
+  META.normOrder.forEach(id => {
+    const n = META.norms[id];
+    const satisfied = state[n.satisfiesSid] === true;
+    let activated;
+    if (n.activatesIsCrossref){
+      const target = results[n.crossrefTarget];
+      activated = target ? target.status === 'vio' : false;
+    } else {
+      activated = state[n.activatesSid] === true;
+    }
+    let status;
+    if (!activated) status = 'inc';
+    else status = satisfied ? 'com' : 'vio';
+    results[id] = {activated, satisfied, status};
+  });
+  return results;
+}
+
+document.getElementById('solveBtn').addEventListener('click', () => {
+  const results = solve();
+  Object.entries(results).forEach(([id, r]) => {
+    const c = COLORS[r.status];
+    paint(shapeEl(id), c.fill, c.stroke);
+    paint(clusterShapeEl(id), r.status === 'inc' ? 'transparent' : c.fill, r.status === 'inc' ? '#94a3b8' : c.stroke);
+  });
+  renderRegister(results);
+});
+
+document.getElementById('resetBtn').addEventListener('click', () => {
+  Object.keys(state).forEach(sid => { state[sid] = null; renderSituation(sid); });
+  clearSolution();
+});
+
+function renderRegister(results){
+  const rows = Object.entries(results);
+  const violated = rows.filter(([,r]) => r.status === 'vio');
+  const body = document.getElementById('registerBody');
+  body.innerHTML = '';
+  const findingText = {
+    HIPAA308b1: 'PHI was transmitted to the vendor while no Business Associate Agreement was in force \u2014 an unauthorized disclosure under \u00a7164.308(b)(1).',
+    HIPAA410: 'The \u00a7164.308(b)(1) gap constitutes a presumptively impermissible disclosure; the 60\u2011day breach notification clock at \u00a7164.410 was not satisfied.',
+    HIPAA504eJ: 'PHI was not confirmed returned or destroyed at termination of the arrangement, as required by \u00a7164.504(e)(2)(ii)(J).'
+  };
+  if (violated.length === 0){
+    document.getElementById('registerEmpty').style.display = 'block';
+    document.getElementById('registerEmpty').textContent = 'No violated duties under the current situation values. Toggle situations above to model the gap.';
+    document.getElementById('registerTable').style.display = 'none';
+    return;
+  }
+  document.getElementById('registerEmpty').style.display = 'none';
+  document.getElementById('registerTable').style.display = 'table';
+  rows.forEach(([id, r]) => {
+    const n = META.norms[id];
+    const pillClass = r.status === 'vio' ? 'pill-vio' : r.status === 'com' ? 'pill-com' : 'pill-inc';
+    const pillText = r.status.toUpperCase();
+    const tr = document.createElement('tr');
+    tr.innerHTML = `<td><span class="pill ${pillClass}">${pillText}</span></td>
+      <td><span class="norm-cite">${id}</span></td>
+      <td>${n.actor}</td>
+      <td>${r.status === 'vio' ? (findingText[id]||'Duty violated.') : (r.status === 'com' ? 'Requirement satisfied under current situation values.' : 'Not yet activated under current situation values.')}</td>`;
+    body.appendChild(tr);
+  });
+}
+</script>
+</body>
+</html>
